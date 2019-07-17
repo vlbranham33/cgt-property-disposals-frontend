@@ -17,10 +17,10 @@
 package uk.gov.hmrc.cgtpropertydisposalsfrontend.config
 
 import javax.inject.{Inject, Singleton}
-
-import play.api.i18n.MessagesApi
+import ltbs.uniform.UniformMessages
+import play.api.i18n.{Lang, MessagesApi}
 import play.api.mvc.Request
-import play.twirl.api.Html
+import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
 import uk.gov.hmrc.cgtpropertydisposalsfrontend.views
 
@@ -31,7 +31,9 @@ class ErrorHandler @Inject() (
 )(implicit val appConfig: AppConfig)
   extends FrontendErrorHandler {
 
-  override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit request: Request[_]): Html =
+  override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit request: Request[_]): Html = {
+    implicit val messages: UniformMessages[Html] = UniformMessages.echo.map(HtmlFormat.escape)
     error_template(pageTitle, heading, message)
+  }
 
 }

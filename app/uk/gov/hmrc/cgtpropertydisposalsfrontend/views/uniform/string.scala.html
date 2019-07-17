@@ -14,21 +14,17 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.cgtpropertydisposalsfrontend.config.AppConfig
-@import play.api.Application
-@import ltbs.uniform.UniformMessages
-
-@this(govUkWrapper: uk.gov.hmrc.cgtpropertydisposalsfrontend.views.html.govuk_wrapper)
+@import cats.implicits._
+@import ltbs.uniform._
 
 
-@(pageTitle: String, heading: String, message: String)(implicit request: Request[_], messages: UniformMessages[Html], appConfig: AppConfig)
+@(key: List[String], values: Option[String], errors: ErrorTree, messages: UniformMessages[Html])
 
-@contentHeader = {
-  <h1>@heading</h1>
+@field_surround(key, errors, messages) {
+
+    <input class="govuk-input govuk-!-width-two-thirds @if(errors.definedAtRoot) {govuk-input--error}"
+    id="@{key.mkString("_")}"
+    name="@{key.mkString(".")}"
+    @values.map(v => Html(s"""value="$v"""")) />
+
 }
-
-@mainContent = {
-  <p>@message</p>
-}
-
-@govUkWrapper(appConfig = appConfig, title = pageTitle, contentHeader = Some(contentHeader), mainContent = mainContent)

@@ -1,1 +1,6 @@
 # microservice specific routes
+
+GET         /property-details/        uk.gov.hmrc.cgtpropertydisposalsfrontend.controllers.PropertyDetailsController.propertyDetails(id = "")
+GET         /property-details/*id     uk.gov.hmrc.cgtpropertydisposalsfrontend.controllers.PropertyDetailsController.propertyDetails(id: String)
+POST        /property-details/        uk.gov.hmrc.cgtpropertydisposalsfrontend.controllers.PropertyDetailsController.propertyDetails(id = "")
+POST        /property-details/*id     uk.gov.hmrc.cgtpropertydisposalsfrontend.controllers.PropertyDetailsController.propertyDetails(id: String)

@@ -6,7 +6,6 @@ import wartremover.wartremoverExcluded
 
 val appName = "cgt-property-disposals-frontend"
 
-
 lazy val wartremoverSettings =
   Seq(
     wartremoverErrors ++= Warts.allBut(
@@ -51,6 +50,8 @@ lazy val scalariformSettings =
     .setPreference(SpacesWithinPatternBinders, true)
 
 
+val compilerOptions  = List("-Ypartial-unification")
+
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin, SbtArtifactory)
   .settings(scalaVersion := "2.11.12")
@@ -65,4 +66,6 @@ lazy val microservice = Project(appName, file("."))
   .settings(wartremoverSettings: _*)
   .settings(scalariformSettings)
   .settings(PlayKeys.playDefaultPort := 7020)
+  .settings(scalacOptions ++= compilerOptions)
+
 

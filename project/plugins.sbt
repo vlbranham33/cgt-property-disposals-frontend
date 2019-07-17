@@ -19,3 +19,5 @@ addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.6.23")
 addSbtPlugin("org.wartremover" % "sbt-wartremover" % "2.3.7")
 
 addSbtPlugin("org.scalariform" % "sbt-scalariform" % "1.8.3")
+
+addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.3")
