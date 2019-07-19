@@ -12,11 +12,13 @@ lazy val wartremoverSettings =
       Wart.DefaultArguments,
       Wart.ImplicitConversion,
       Wart.ImplicitParameter,
+      Wart.Nothing,
       Wart.ToString
     ),
     wartremoverExcluded ++=
       routes.in(Compile).value ++
         (baseDirectory.value ** "*.sc").get ++
+        (baseDirectory.value ** "*TypeClassList*" ).get ++
         Seq(sourceManaged.value / "main" / "sbt-buildinfo" / "BuildInfo.scala")
   )
 
@@ -63,7 +65,7 @@ lazy val microservice = Project(appName, file("."))
   .configs(IntegrationTest)
   .settings(integrationTestSettings(): _*)
   .settings(resolvers += Resolver.jcenterRepo)
-  .settings(wartremoverSettings: _*)
+//  .settings(wartremoverSettings: _*)
   .settings(scalariformSettings)
   .settings(PlayKeys.playDefaultPort := 7020)
   .settings(scalacOptions ++= compilerOptions)

@@ -16,7 +16,9 @@
 
 package uk.gov.hmrc.cgtpropertydisposalsfrontend.controllers
 
+import cats.data.NonEmptyList
 import cats.implicits._
+import cats.instances.either._
 import com.google.inject.Inject
 import play.api.i18n.I18nSupport
 import play.api.mvc.MessagesControllerComponents
@@ -24,15 +26,16 @@ import uk.gov.hmrc.cgtpropertydisposalsfrontend.config.AppConfig
 import uk.gov.hmrc.cgtpropertydisposalsfrontend.views
 import ltbs.uniform._
 import interpreters.playframework._
-import ltbs.uniform.common.web.GenericWebTell
 import play.api.i18n.{Messages => _, _}
 import play.api.mvc._
 import play.twirl.api.{Html, HtmlFormat}
-import uk.gov.hmrc.cgtpropertydisposalsfrontend.model.{Address, AddressLookup, Postcode, PropertyData}
+import uk.gov.hmrc.cgtpropertydisposalsfrontend.model.{Postcode, PropertyData, SelectedAddress}
+import uk.gov.hmrc.cgtpropertydisposalsfrontend.services.AddressLookupService
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class PropertyDetailsController @Inject() (
+    addressLookupService: AddressLookupService,
     val messagesApi: MessagesApi,
     mainTemplate: uk.gov.hmrc.cgtpropertydisposalsfrontend.views.html.main_template
 )(mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
@@ -68,26 +71,16 @@ class PropertyDetailsController @Inject() (
   override def selectionOfFields(inner: List[(String, (List[String], _root_.ltbs.uniform.common.web.Path, Option[Input], ErrorTree, UniformMessages[Html]) => Html)])(key: List[String], path: _root_.ltbs.uniform.common.web.Path, values: Option[Input], errors: ErrorTree, messages: UniformMessages[Html]): Html = {
     Html("hello")
   }
-  val f: AddressLookup[WebMonad] = new AddressLookup[WebMonad] {
-    override def retrieveAddresses(postcode: Postcode): WebMonad[List[Address]] =
-      FutureAdapter.alwaysRerun.apply(
-        Future.successful(List(
-          Address(List("1 the street"), "Town", "West Sussex"),
-          Address(List("2 the street"), "Town", "West Sussex")
-        ))
-      )
-  }
 
   implicit val persistence: DebugPersistence = DebugPersistence(UnsafePersistence())
 
   implicit val twirlPostcodeField: FormField[Postcode, Html] = new FormField[Postcode, Html] {
     def decode(out: Input): Either[ErrorTree, Postcode] = {
-      val root: Option[String] = out.valueAtRoot
-        .flatMap(_.filter(_.trim.nonEmpty).headOption)
+      val root: Option[String] = out.valueAtRoot.flatMap(_.find(_.trim.nonEmpty))
 
       root match {
-        case None       ⇒ Left[ErrorTree, Postcode](ErrorMsg("required").toTree)
-        case Some(data) ⇒ Right[ErrorTree, Postcode](Postcode(data))
+        case None       ⇒ ErrorMsg("required").toTree.asLeft[Postcode]
+        case Some(data) ⇒ Postcode(data).asRight[ErrorTree]
       }
     }
 
@@ -105,19 +98,20 @@ class PropertyDetailsController @Inject() (
     }
   }
 
-  implicit val twirlAddressListHtml: GenericWebTell[List[Address], Html] = new GenericWebTell[List[Address], Html] {
-    override def render(in: List[Address]): Html = Html(s"""${in.mkString("\n")}""")
-  }
+  implicit val addressLookupWebAsk: AddressLookupWebAsk = new AddressLookupWebAsk(addressLookupService, twirlPostcodeField)
+
+  //  implicit val twirlAddressListHtml: GenericWebTell[List[Address], Html] = new GenericWebTell[List[Address], Html] {
+  //    override def render(in: List[Address]): Html = Html(s"""${in.mkString("\n")}""")
+  //  }
 
   def propertyDetails(id: String): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
 
-    val playJourney: WebMonad[List[Address]] = PropertyData.program(
-      new FuturePlayInterpreter[PropertyData.TellTypes, PropertyData.AskTypes],
-      f
+    val playJourney: WebMonad[SelectedAddress] = PropertyData.program(
+      new FuturePlayInterpreter[PropertyData.TellTypes, PropertyData.AskTypes]
     )
 
-    run[List[Address]](playJourney, id) { out =>
-      Future.successful(Ok(out.mkString("; ")))
+    run[SelectedAddress](playJourney, id) { out =>
+      Future.successful(Ok(out.toString))
     }
   }
 

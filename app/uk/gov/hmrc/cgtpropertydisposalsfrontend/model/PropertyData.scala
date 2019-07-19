@@ -16,40 +16,40 @@
 
 package uk.gov.hmrc.cgtpropertydisposalsfrontend.model
 
-import cats.Monad
+import cats.{Eq, Monad}
+import cats.instances.string._
 import cats.syntax.flatMap._
 import cats.syntax.functor._
+import cats.syntax.eq._
 import ltbs.uniform.{Language, NilTypes}
+
 import scala.language.higherKinds
 import ltbs.uniform.::
 
 final case class Postcode(value: String)
 
-final case class Address(lines: List[String], town: String, county: String)
+object Postcode {
+
+  implicit val eq: Eq[Postcode] = Eq.instance(_.value === _.value)
+}
 
 final case class PropertyData(postcode: Postcode)
 
-abstract class AddressLookup[F[_]] {
-
-  def retrieveAddresses(postcode: Postcode): F[List[Address]]
-
-}
+final case class SelectedAddress(lines: List[String], postcode: String)
 
 object PropertyData {
 
-  type TellTypes = List[Address] :: NilTypes
+  type TellTypes = NilTypes
 
-  type AskTypes = Address :: Postcode :: NilTypes
+  type AskTypes = SelectedAddress :: Postcode :: NilTypes
 
   def program[F[_]: Monad](
-      interpreter: Language[F, TellTypes, AskTypes],
-      addressLookup: AddressLookup[F]
-  ): F[List[Address]] = {
+      interpreter: Language[F, TellTypes, AskTypes]
+  ): F[SelectedAddress] = {
     import interpreter._
     for {
-      postcode <- ask[Postcode]("postcode")
-      addresses <- addressLookup.retrieveAddresses(postcode)
-      address <- ask[Address]()
+      _ <- ask[Postcode]("postcode")
+      address <- ask[SelectedAddress]("address")
     } yield address
   }
 
