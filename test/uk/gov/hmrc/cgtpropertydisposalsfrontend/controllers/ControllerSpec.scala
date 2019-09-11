@@ -23,24 +23,30 @@ import com.typesafe.config.ConfigFactory
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpec}
 import play.api.i18n.{Lang, MessagesApi}
-import play.api.inject.bind
+import play.api.inject.{Modules, bind}
 import play.api.inject.guice.{GuiceApplicationBuilder, GuiceableModule}
 import play.api.mvc.{Call, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.api.{Application, Configuration, Play}
+import play.modules.reactivemongo.ReactiveMongoComponent
+import reactivemongo.api.DefaultDB
 import uk.gov.hmrc.cgtpropertydisposalsfrontend.config.{ErrorHandler, ViewConfig}
+import uk.gov.hmrc.cgtpropertydisposalsfrontend.repos.SessionStore
+import uk.gov.hmrc.mongo.MongoConnector
 
 import scala.concurrent.Future
 import scala.reflect.ClassTag
 
 trait ControllerSpec extends WordSpec with Matchers with BeforeAndAfterAll with MockFactory {
 
+  val sessionStoreToBind: SessionStore
+
   val overrideBindings: List[GuiceableModule] = List.empty[GuiceableModule]
 
   lazy val additionalConfig = Configuration()
 
-  def buildFakeApplication(): Application =
+  def buildFakeApplication(): Application = {
     new GuiceApplicationBuilder()
       .configure(
         Configuration(
@@ -51,9 +57,11 @@ trait ControllerSpec extends WordSpec with Matchers with BeforeAndAfterAll with 
           )
         ) ++ additionalConfig
       )
-      .disable[uk.gov.hmrc.cgtpropertydisposalsfrontend.repos.SessionStore]
+      .overrides(bind[SessionStore].toInstance(sessionStoreToBind))
+      .overrides(bind[ReactiveMongoComponent].toInstance(stub[ReactiveMongoComponent]))
       .overrides(overrideBindings: _*)
       .build()
+  }
 
   lazy val fakeApplication: Application = buildFakeApplication()
 

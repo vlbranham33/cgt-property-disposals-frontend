@@ -18,8 +18,11 @@ package uk.gov.hmrc.cgtpropertydisposalsfrontend.controllers
 
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.cgtpropertydisposalsfrontend.repos.SessionStore
 
 class ReturnsControllerSpec extends ControllerSpec {
+
+  override val sessionStoreToBind = stub[SessionStore]
 
   val controller = instanceOf[ReturnsController]
 

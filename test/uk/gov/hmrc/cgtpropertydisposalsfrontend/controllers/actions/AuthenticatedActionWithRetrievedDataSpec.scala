@@ -36,6 +36,7 @@ import uk.gov.hmrc.cgtpropertydisposalsfrontend.controllers.{RetrievalOps, route
 import uk.gov.hmrc.cgtpropertydisposalsfrontend.controllers.{ControllerSpec, SessionSupport}
 import uk.gov.hmrc.cgtpropertydisposalsfrontend.models.{DateOfBirth, Email, NINO, Name, SAUTR, UserType}
 import uk.gov.hmrc.cgtpropertydisposalsfrontend.models.EitherFormat.eitherFormat
+import uk.gov.hmrc.cgtpropertydisposalsfrontend.repos.SessionStore
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -43,6 +44,7 @@ import scala.concurrent.Future
 class AuthenticatedActionWithRetrievedDataSpec
   extends ControllerSpec with MockFactory with SessionSupport with AuthActionSpec {
 
+  override val sessionStoreToBind = stub[SessionStore]
 
     val authenticatedAction =
       new AuthenticatedActionWithRetrievedData(mockAuthConnector, config, instanceOf[ErrorHandler], mockSessionStore)

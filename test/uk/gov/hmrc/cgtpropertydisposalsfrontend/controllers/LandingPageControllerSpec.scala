@@ -19,8 +19,11 @@ package uk.gov.hmrc.cgtpropertydisposalsfrontend.controllers
 import play.api.i18n.MessagesApi
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.cgtpropertydisposalsfrontend.repos.SessionStore
 
 class LandingPageControllerSpec extends ControllerSpec {
+
+  override val sessionStoreToBind = stub[SessionStore]
 
   lazy val controller: LandingPageController = instanceOf[LandingPageController]
 

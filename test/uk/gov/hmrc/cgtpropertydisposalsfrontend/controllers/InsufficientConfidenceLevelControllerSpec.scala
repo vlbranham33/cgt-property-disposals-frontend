@@ -35,10 +35,11 @@ import scala.concurrent.Future
 class InsufficientConfidenceLevelControllerSpec
   extends ControllerSpec with IvBehaviourSupport with SessionSupport with AuthSupport {
 
+  override val sessionStoreToBind = mockSessionStore
+
   override val overrideBindings =
     List[GuiceableModule](
-      bind[AuthConnector].toInstance(mockAuthConnector),
-      bind[SessionStore].toInstance(mockSessionStore)
+      bind[AuthConnector].toInstance(mockAuthConnector)
     )
 
   override lazy val additionalConfig = ivConfig(useRelativeUrls = false)
@@ -195,11 +196,11 @@ class InsufficientConfidenceLevelControllerSpec
 
         "the user indicates that they do have a NINO and the application " +
           "has been configured to used absolute urls to iv" in new ControllerSpec {
+          override val sessionStoreToBind = mockSessionStore
 
           override val overrideBindings =
             List[GuiceableModule](
-              bind[AuthConnector].toInstance(mockAuthConnector),
-              bind[SessionStore].toInstance(mockSessionStore)
+              bind[AuthConnector].toInstance(mockAuthConnector)
             )
 
           override lazy val additionalConfig = ivConfig(useRelativeUrls = true)

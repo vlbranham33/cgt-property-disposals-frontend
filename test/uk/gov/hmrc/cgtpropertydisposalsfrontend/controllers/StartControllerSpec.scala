@@ -42,10 +42,11 @@ class StartControllerSpec extends ControllerSpec with AuthSupport with SessionSu
 
   val mockService = mock[BusinessPartnerRecordService]
 
+  override val sessionStoreToBind = mockSessionStore
+
   override val overrideBindings =
     List[GuiceableModule](
       bind[AuthConnector].toInstance(mockAuthConnector),
-      bind[SessionStore].toInstance(mockSessionStore),
       bind[BusinessPartnerRecordService].toInstance(mockService)
     )
 
@@ -167,10 +168,10 @@ class StartControllerSpec extends ControllerSpec with AuthSupport with SessionSu
 
             "the user does not have sufficient confidence level and there is a NINO in the auth record and " +
               "the application is configured to use absoluate URLs for IV" in new ControllerSpec {
+              override val sessionStoreToBind = mockSessionStore
               override val overrideBindings =
                 List[GuiceableModule](
                   bind[AuthConnector].toInstance(mockAuthConnector),
-                  bind[SessionStore].toInstance(mockSessionStore),
                   bind[BusinessPartnerRecordService].toInstance(mockService)
                 )
 

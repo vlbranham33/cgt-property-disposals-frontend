@@ -39,10 +39,11 @@ class SubscriptionControllerSpec extends ControllerSpec with AuthSupport with Se
 
   val mockSubscriptionService = mock[SubscriptionService]
 
+  override val sessionStoreToBind = mockSessionStore
+
   override val overrideBindings =
     List[GuiceableModule](
       bind[AuthConnector].toInstance(mockAuthConnector),
-      bind[SessionStore].toInstance(mockSessionStore),
       bind[SubscriptionService].toInstance(mockSubscriptionService)
     )
 

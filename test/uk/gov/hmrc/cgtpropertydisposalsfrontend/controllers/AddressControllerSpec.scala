@@ -47,10 +47,11 @@ class AddressControllerSpec extends ControllerSpec with AuthSupport with Session
       .expects(expectedPostcode, *)
       .returning(EitherT.fromEither[Future](result))
 
+  override val sessionStoreToBind = mockSessionStore
+
   override val overrideBindings: List[GuiceableModule] =
     List(
       bind[AuthConnector].toInstance(mockAuthConnector),
-      bind[SessionStore].toInstance(mockSessionStore),
       bind[AddressLookupService].toInstance(mockService)
     )
 

@@ -51,7 +51,7 @@ class SessionStoreImplSpec extends WordSpec with Matchers with MongoSupport with
   override implicit val patienceConfig: PatienceConfig =
     PatienceConfig(5.seconds, 500.millis)
 
-  "SessionStoreImpl" must {
+  "SessionStoreImpl" ignore {
 
 
     "be able to insert SessionData into mongo and read it back" in new TestEnvironment {

@@ -33,10 +33,11 @@ import scala.concurrent.Future
 
 class RegisterTrustControllerSpec extends ControllerSpec with AuthSupport with SessionSupport {
 
+  override val sessionStoreToBind = mockSessionStore
+
   override val overrideBindings =
     List[GuiceableModule](
-      bind[AuthConnector].toInstance(mockAuthConnector),
-      bind[SessionStore].toInstance(mockSessionStore)
+      bind[AuthConnector].toInstance(mockAuthConnector)
     )
 
   lazy val controller = instanceOf[RegisterTrustController]

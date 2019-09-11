@@ -47,10 +47,11 @@ class EmailControllerSpec extends ControllerSpec with AuthSupport with SessionSu
 
   val mockUuidGenerator = mock[UUIDGenerator]
 
+  override val sessionStoreToBind = mockSessionStore
+
   override val overrideBindings =
     List[GuiceableModule](
       bind[AuthConnector].toInstance(mockAuthConnector),
-      bind[SessionStore].toInstance(mockSessionStore),
       bind[EmailVerificationService].toInstance(mockService),
       bind[UUIDGenerator].toInstance(mockUuidGenerator)
     )

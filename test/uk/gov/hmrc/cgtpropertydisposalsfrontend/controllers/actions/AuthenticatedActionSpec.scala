@@ -29,12 +29,15 @@ import uk.gov.hmrc.auth.core.retrieve.EmptyRetrieval
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.cgtpropertydisposalsfrontend.config.ErrorHandler
 import uk.gov.hmrc.cgtpropertydisposalsfrontend.controllers.{ControllerSpec, SessionSupport}
+import uk.gov.hmrc.cgtpropertydisposalsfrontend.repos.SessionStore
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class AuthenticatedActionSpec
   extends ControllerSpec with MockFactory with SessionSupport with AuthActionSpec {
+
+  override val sessionStoreToBind = stub[SessionStore]
 
    val authenticatedAction =
      new AuthenticatedAction(mockAuthConnector, config, instanceOf[ErrorHandler], mockSessionStore)

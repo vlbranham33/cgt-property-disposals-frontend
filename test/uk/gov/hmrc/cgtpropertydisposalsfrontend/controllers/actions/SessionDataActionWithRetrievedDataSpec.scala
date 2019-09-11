@@ -17,6 +17,7 @@
 package uk.gov.hmrc.cgtpropertydisposalsfrontend.controllers.actions
 
 import java.time._
+
 import org.scalacheck.ScalacheckShapeless._
 import play.api.i18n.MessagesApi
 import play.api.mvc.Results.Ok
@@ -26,11 +27,14 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.cgtpropertydisposalsfrontend.config.ErrorHandler
 import uk.gov.hmrc.cgtpropertydisposalsfrontend.controllers.{ControllerSpec, SessionSupport}
 import uk.gov.hmrc.cgtpropertydisposalsfrontend.models._
+import uk.gov.hmrc.cgtpropertydisposalsfrontend.repos.SessionStore
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class SessionDataActionWithRetrievedDataSpec extends ControllerSpec with SessionSupport {
+
+  override val sessionStoreToBind = stub[SessionStore]
 
   lazy val action: SessionDataActionWithRetrievedData =
     new SessionDataActionWithRetrievedData(mockSessionStore, instanceOf[ErrorHandler])

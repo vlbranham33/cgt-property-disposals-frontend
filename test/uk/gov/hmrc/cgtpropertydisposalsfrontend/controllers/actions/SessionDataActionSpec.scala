@@ -25,11 +25,14 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.cgtpropertydisposalsfrontend.config.ErrorHandler
 import uk.gov.hmrc.cgtpropertydisposalsfrontend.controllers.{ControllerSpec, SessionSupport}
 import uk.gov.hmrc.cgtpropertydisposalsfrontend.models.{DateOfBirth, Email, Error, NINO, Name, SessionData, sample}
+import uk.gov.hmrc.cgtpropertydisposalsfrontend.repos.SessionStore
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class SessionDataActionSpec  extends ControllerSpec with SessionSupport {
+
+  override val sessionStoreToBind = stub[SessionStore]
 
   lazy val action: SessionDataAction = new SessionDataAction(mockSessionStore, instanceOf[ErrorHandler])
 

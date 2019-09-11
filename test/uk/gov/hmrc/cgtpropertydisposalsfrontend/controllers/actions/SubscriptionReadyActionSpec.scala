@@ -26,11 +26,14 @@ import uk.gov.hmrc.cgtpropertydisposalsfrontend.config.ErrorHandler
 import uk.gov.hmrc.cgtpropertydisposalsfrontend.controllers.{ControllerSpec, SessionSupport, routes}
 import uk.gov.hmrc.cgtpropertydisposalsfrontend.models.SubscriptionStatus.{SubscriptionComplete, SubscriptionReady}
 import uk.gov.hmrc.cgtpropertydisposalsfrontend.models._
+import uk.gov.hmrc.cgtpropertydisposalsfrontend.repos.SessionStore
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class SubscriptionReadyActionSpec extends ControllerSpec with SessionSupport {
+
+  override val sessionStoreToBind = stub[SessionStore]
 
   lazy val action =
     new SubscriptionReadyAction(mockSessionStore, instanceOf[ErrorHandler])

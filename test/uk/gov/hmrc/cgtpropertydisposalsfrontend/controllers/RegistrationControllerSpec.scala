@@ -36,10 +36,11 @@ import scala.concurrent.Future
 class RegistrationControllerSpec
   extends ControllerSpec with AuthSupport with SessionSupport with ScalaCheckDrivenPropertyChecks {
 
+  override val sessionStoreToBind = mockSessionStore
+
   override val overrideBindings =
     List[GuiceableModule](
-      bind[AuthConnector].toInstance(mockAuthConnector),
-      bind[SessionStore].toInstance(mockSessionStore)
+      bind[AuthConnector].toInstance(mockAuthConnector)
     )
 
   lazy val controller = instanceOf[RegistrationController]
